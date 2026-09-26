@@ -1,6 +1,6 @@
 # Turzx.Net
 
-Windows標準WinUSBでTURZX 9.2インチ（USB `1CBE:0092`）を制御する、非公式.NET 10ライブラリーです。NuGetパッケージIDは `Turzx.Net` です。現時点ではパッケージを公開していません。
+Windows標準WinUSBでTURZX 9.2インチ（USB `1CBE:0092`）を制御する、非公式.NET 10ライブラリーです。NuGetパッケージIDは `Turzx.Net` です。
 
 ## ライブラリーの利用
 
@@ -39,7 +39,7 @@ Windowsのmiseから以下を実行できます。`.NET SDK 10.0.401` を `mise.
 
 リリースタグは `vMAJOR.MINOR.PATCH` です。バージョン未指定時は、ローカルと `origin` にある最大のタグを数値比較し、PATCHを1増やします。まだタグがない場合はプロジェクトの `0.1.0` を基準に `v0.1.1` を提案します。明示したバージョンは既存の最大タグより大きい必要があります。
 
-`release` は作業ツリーがクリーンであることを確認し、注釈付きタグを作成して `origin` に送信します。タグの送信を受けた [GitHub Actions](../.github/workflows/publish.yml) が、そのタグと同じバージョンでパッケージを作成し、NuGet.orgへ公開します。GitHubリポジトリのActions用Secret `NUGET_API_KEY` にNuGetのAPIキーを登録してください。キーはローカルの `release` には不要です。ワークフローにはUSB実機がないため、実機テストは実行しません。タグとNuGetパッケージの作成は、`release` を明示的に実行するまで行われません。
+`release` は作業ツリーがクリーンであることを確認し、注釈付きタグを作成して `origin` に送信します。タグの送信を受けた [GitHub Actions](../.github/workflows/publish.yml) が、そのタグと同じバージョンでパッケージを作成し、NuGet.orgへ公開します。公開ジョブはGitHubの `production` Environmentを使い、NuGet Trusted Publishingで一時的なAPIキーを取得します。固定のAPIキーをSecretに登録する必要はありません。ワークフローにはUSB実機がないため、実機テストは実行しません。タグとNuGetパッケージの作成は、`release` を明示的に実行するまで行われません。
 
 ```powershell
 dotnet test tests/Turzx.Net.Tests -c Release

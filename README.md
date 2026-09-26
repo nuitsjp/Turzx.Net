@@ -1,6 +1,8 @@
 # Turzx.Net
 
-Turzx.Net is an unofficial .NET 10 library for controlling the TURZX 9.2-inch display over Windows WinUSB. The package is not published yet.
+Turzx.Net is an unofficial .NET 10 library for controlling the TURZX 9.2-inch display over Windows WinUSB.
+
+Install from NuGet: `dotnet add package Turzx.Net`.
 
 Requirements: Windows, the .NET 10 SDK, and a TURZX 9.2-inch device configured for WinUSB.
 
