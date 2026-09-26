@@ -62,9 +62,6 @@ try {
     if ($status.Count -gt 0) {
         throw 'Working tree is not clean. Commit all release sources before tagging.'
     }
-    if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
-        throw 'NUGET_API_KEY is required to publish the package.'
-    }
     if ($tags -contains $tag) {
         throw "Tag $tag already exists locally or on origin."
     }
@@ -72,24 +69,12 @@ try {
         throw "Version must be greater than the latest local release tag $($latest.Name)."
     }
 
-    & dotnet test 'tests/Turzx.Net.Tests/Turzx.Net.Tests.csproj' -c Release
-    Assert-ExitCode 'dotnet test'
-
-    & dotnet pack 'src/Turzx.Net/Turzx.Net.csproj' -c Release "-p:Version=$releaseVersion" -o 'artifacts/packages'
-    Assert-ExitCode 'dotnet pack'
-    $package = Join-Path $projectRoot "artifacts/packages/Turzx.Net.$releaseVersion.nupkg"
-    if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
-        throw "Expected package was not created: $package"
-    }
-
     & git tag -a $tag -m "Release $tag"
     Assert-ExitCode 'git tag'
     & git push origin $tag
     Assert-ExitCode 'git push'
 
-    & dotnet nuget push $package --source 'https://api.nuget.org/v3/index.json' --api-key $env:NUGET_API_KEY
-    Assert-ExitCode 'dotnet nuget push'
-    Write-Host "Published Turzx.Net $releaseVersion from $tag."
+    Write-Host "Pushed $tag to origin. GitHub Actions will publish Turzx.Net $releaseVersion."
 }
 finally {
     Pop-Location

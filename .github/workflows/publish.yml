@@ -1,0 +1,41 @@
+name: Publish NuGet package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.401'
+      - name: Pack tagged version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $tag = $env:RELEASE_TAG
+          if ($tag -notmatch '^v(?<version>\d+\.\d+\.\d+)$') {
+            throw "Invalid release tag: $tag"
+          }
+          dotnet pack src/Turzx.Net/Turzx.Net.csproj -c Release -o artifacts/packages "-p:Version=$($Matches.version)"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Publish to NuGet.org
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw 'Repository secret NUGET_API_KEY is required.'
+          }
+          $version = $env:RELEASE_TAG.Substring(1)
+          dotnet nuget push "artifacts/packages/Turzx.Net.$version.nupkg" --source https://api.nuget.org/v3/index.json --api-key $env:NUGET_API_KEY
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

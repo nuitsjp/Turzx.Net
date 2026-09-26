@@ -34,12 +34,12 @@ Windowsのmiseから以下を実行できます。`.NET SDK 10.0.401` を `mise.
 | `mise run pack` | プロジェクトに記載されたバージョンでローカルNuGetパッケージを作成 |
 | `mise run manual` | 抜き差しを確認するコンソールを起動 |
 | `mise run release -Preview` | 次のタグとパッケージバージョンを表示するだけ |
-| `mise run release` | 自動採番してタグとNuGet.orgへ公開 |
-| `mise run release 0.2.0` | 指定バージョンのタグとパッケージを公開 |
+| `mise run release` | 自動採番してタグを作成し、`origin` へ送信 |
+| `mise run release 0.2.0` | 指定バージョンのタグを作成し、`origin` へ送信 |
 
 リリースタグは `vMAJOR.MINOR.PATCH` です。バージョン未指定時は、ローカルと `origin` にある最大のタグを数値比較し、PATCHを1増やします。まだタグがない場合はプロジェクトの `0.1.0` を基準に `v0.1.1` を提案します。明示したバージョンは既存の最大タグより大きい必要があります。
 
-`release` は作業ツリーがクリーンで、`NUGET_API_KEY` 環境変数が設定されていることを確認します。続いて実機テスト、バージョンを指定したパッケージ作成、ローカルの注釈付きタグ作成、`origin` へのタグ送信、NuGet.orgへの公開を順番に実行します。途中で失敗した場合、それまでに作成・送信したタグは残るため、ログを確認してから再実行してください。タグとNuGetパッケージの作成は、`release` を明示的に実行するまで行われません。
+`release` は作業ツリーがクリーンであることを確認し、注釈付きタグを作成して `origin` に送信します。タグの送信を受けた [GitHub Actions](../.github/workflows/publish.yml) が、そのタグと同じバージョンでパッケージを作成し、NuGet.orgへ公開します。GitHubリポジトリのActions用Secret `NUGET_API_KEY` にNuGetのAPIキーを登録してください。キーはローカルの `release` には不要です。ワークフローにはUSB実機がないため、実機テストは実行しません。タグとNuGetパッケージの作成は、`release` を明示的に実行するまで行われません。
 
 ```powershell
 dotnet test tests/Turzx.Net.Tests -c Release
