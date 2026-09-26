@@ -1,0 +1,25 @@
+[tools]
+dotnet = "10.0.401"
+
+[tasks.build]
+description = "Build the Turzx.Net library and manual test console"
+run = [
+  "dotnet build src/Turzx.Net -c Release",
+  "dotnet build samples/Turzx.ManualTest -c Release",
+]
+
+[tasks.test]
+description = "Run automated tests (requires a connected TURZX 9.2-inch device)"
+run = "dotnet test tests/Turzx.Net.Tests -c Release"
+
+[tasks.pack]
+description = "Create a local NuGet package using the project version"
+run = "dotnet pack src/Turzx.Net -c Release -o artifacts/packages"
+
+[tasks.manual]
+description = "Run the interactive USB disconnect/reconnect test"
+run = "dotnet run -c Release --project samples/Turzx.ManualTest"
+
+[tasks.release]
+description = "Test, increment or select a Git version tag, then publish Turzx.Net to NuGet.org"
+run = "pwsh -NoProfile -File tools/Publish-Release.ps1"
